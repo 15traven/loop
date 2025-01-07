@@ -1,5 +1,13 @@
 use tray_icon::TrayIconBuilder;
 
+fn check_connection() -> Result<(), reqwest::Error>{
+    let res = reqwest::blocking::get("https://google.com");
+    match res {
+        Ok(_) => Ok(()),
+        Err(err) => Err(err)
+    }
+}
+
 fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
     let (icon_rgba, icon_width, icon_height) = {
         let image = image::open(path)
