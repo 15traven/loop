@@ -1,4 +1,4 @@
-use std::{thread, time::Duration};
+use std::time::Duration;
 use tokio::time::sleep;
 use tray_icon::TrayIconBuilder;
 
@@ -24,19 +24,25 @@ fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
 
 #[tokio::main]
 async fn main() {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
-    let icon = load_icon(std::path::Path::new(path));
+    let connected_icon_path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/connected_icon.png");
+    let connected_icon = load_icon(std::path::Path::new(connected_icon_path));
+
+    let disconnected_icon_path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/disconnected_icon.png");
+    let disconnected_icon = load_icon(std::path::Path::new(disconnected_icon_path));
 
     let tray_icon = TrayIconBuilder::new()
-        .with_tooltip("tray")
-        .with_icon(icon)
+        .with_icon(connected_icon.clone())
         .build()
         .unwrap();
 
    loop {
         match check_connection().await {
-            Ok(_) => println!("Work"),
-            Err(err) => println!("Error")
+            Ok(_) => {
+                let _ = tray_icon.set_icon(Some(connected_icon.clone()));
+            }
+            Err(_err) => {
+                let _ = tray_icon.set_icon(Some(disconnected_icon.clone()));
+            }
         }
         sleep(Duration::from_secs(20)).await;
    }
