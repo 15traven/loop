@@ -1,4 +1,7 @@
-use std::{thread::{self, sleep}, time::Duration};
+use std::{
+    thread::{self, sleep}, 
+    time::Duration
+};
 use tao::{
     event::Event,
     event_loop::{ControlFlow, EventLoopBuilder},
@@ -10,6 +13,7 @@ use tray_icon::{
     }, 
     TrayIcon, TrayIconBuilder, Icon
 };
+use notify_rust::Notification;
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
@@ -21,16 +25,43 @@ fn check_connection(
     disconnected_icon: Icon
 ) {    
     thread::spawn(move || {
+        let mut previous_status = true;
+        let mut current_status = true;
+
         loop {
             let res = reqwest::blocking::get("https://google.com");
             match res {
                 Ok(_)=> {
                     tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
+                    current_status = true;
                 }
                 Err(_err) => {
                     tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
+                    current_status = false;
                 }
             }
+
+            
+            if current_status != previous_status {
+                println!("Change");
+                match current_status {
+                    true => {
+                        let _ = Notification::new()
+                        .appname("Mercury")
+                        .body("Online")
+                        .show();
+                    }
+                    false => {
+                        let _ = Notification::new()
+                        .appname("Mercury")
+                        .body("Offline")
+                        .show();
+                    }
+                }
+            }
+
+            previous_status = current_status;
+
             sleep(Duration::from_secs(20));
         }
     });
