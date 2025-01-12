@@ -1837,6 +1837,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
+name = "loop"
+version = "0.1.0"
+dependencies = [
+ "image",
+ "notify-rust",
+ "redb",
+ "reqwest",
+ "tao",
+ "tray-icon",
+]
+
+[[package]]
 name = "loop9"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1890,18 +1902,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "mercury"
-version = "0.1.0"
-dependencies = [
- "image",
- "notify-rust",
- "redb",
- "reqwest",
- "tao",
- "tray-icon",
 ]
 
 [[package]]
