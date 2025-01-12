@@ -1,9 +1,11 @@
+use std::sync::Arc;
 use redb::{Database, TableDefinition};
 
 const TABLE: TableDefinition<&str, bool> = TableDefinition::new("preferences");
 
+#[derive(Clone)]
 pub struct Preferences {
-    db: Database
+    db: Arc<Database>
 }
 
 impl Preferences {
@@ -17,7 +19,9 @@ impl Preferences {
         }
         let _ = txn.commit();
 
-        Self { db }
+        Self { 
+            db: Arc::new(db)     
+        }
     }
 
     pub fn set_intial_values(&self) {

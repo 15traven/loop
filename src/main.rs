@@ -8,10 +8,8 @@ use tao::{
 };
 use tray_icon::{
     menu::{
-        AboutMetadata, Menu, MenuEvent, 
-        MenuItem, PredefinedMenuItem
-    }, 
-    TrayIcon, TrayIconBuilder, Icon
+        AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem
+    }, Icon, TrayIcon, TrayIconBuilder
 };
 use notify_rust::Notification;
 
@@ -25,7 +23,8 @@ enum UserEvent {
 fn check_connection(
     mut tray_icon: TrayIcon,
     connected_icon: Icon,
-    disconnected_icon: Icon
+    disconnected_icon: Icon,
+    preferences: Preferences
 ) {    
     thread::spawn(move || {
         let mut previous_status = true;
@@ -44,21 +43,21 @@ fn check_connection(
                 }
             }
 
-            
-            if current_status != previous_status {
-                println!("Change");
-                match current_status {
-                    true => {
-                        let _ = Notification::new()
-                        .appname("Mercury")
-                        .body("Online")
-                        .show();
-                    }
-                    false => {
-                        let _ = Notification::new()
-                        .appname("Mercury")
-                        .body("Offline")
-                        .show();
+            if preferences.load_preference("notifications") {
+                if current_status != previous_status {
+                    match current_status {
+                        true => {
+                            let _ = Notification::new()
+                            .appname("Mercury")
+                            .body("Online")
+                            .show();
+                        }
+                        false => {
+                            let _ = Notification::new()
+                            .appname("Mercury")
+                            .body("Offline")
+                            .show();
+                        }
                     }
                 }
             }
@@ -98,7 +97,14 @@ fn main() {
 
     let tray_menu = Menu::new();
     let exit_item = MenuItem::new("Exit", true, None);
+    let notifications_switch_item = CheckMenuItem::new(
+        "Notification", 
+        true, 
+        true, 
+        None
+    );
     let _ = tray_menu.append_items(&[
+        &notifications_switch_item,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
@@ -129,13 +135,25 @@ fn main() {
                 preferences = Some(Preferences::new());
                 preferences.as_ref().unwrap().set_intial_values();
 
+                notifications_switch_item.set_checked(
+                    preferences.as_ref().unwrap().load_preference("notifications")
+                );
+
                 check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
                     connected_icon.clone(), 
-                    disconnected_icon.clone()
+                    disconnected_icon.clone(),
+                    preferences.clone().unwrap()
                 );
             }
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
+                if event.id == notifications_switch_item.id() {
+                    preferences.as_ref().unwrap().toggle_preference("notifications");
+                    notifications_switch_item.set_checked(
+                        preferences.as_ref().unwrap().load_preference("notifications")
+                    );
+                }
+
                 if event.id == exit_item.id() {
                     tray_icon.take();
                     *control_flow = ControlFlow::Exit;
