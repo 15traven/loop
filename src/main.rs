@@ -1,7 +1,7 @@
 use std::{
-    thread::{self, sleep}, 
-    time::Duration
+    thread::{self, sleep}, time::Duration
 };
+use auto_launch::{AutoLaunch, AutoLaunchBuilder};
 use tao::{
     event::Event,
     event_loop::{ControlFlow, EventLoopBuilder},
@@ -103,8 +103,15 @@ fn main() {
         true, 
         None
     );
+    let autolaunch_switch_item = CheckMenuItem::new(
+        "Autolaunch", 
+        true, 
+        true, 
+        None
+    );
     let _ = tray_menu.append_items(&[
         &notifications_switch_item,
+        &autolaunch_switch_item,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
@@ -118,6 +125,7 @@ fn main() {
 
     let mut tray_icon: Option<TrayIcon> = None;
     let mut preferences: Option<Preferences> = None;
+    let mut autolaunch: Option<AutoLaunch> = None;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -139,6 +147,31 @@ fn main() {
                     preferences.as_ref().unwrap().load_preference("notifications")
                 );
 
+                let exe_path = std::env::current_exe()
+                    .unwrap()
+                    .display()
+                    .to_string();
+
+                autolaunch = Some(
+                    AutoLaunchBuilder::new()
+                        .set_app_name("loop")
+                        .set_app_path(&exe_path)
+                        .build()
+                        .unwrap()
+                );
+                match preferences.as_ref().unwrap().load_preference("autolaunch") {
+                    true => {
+                        let _ = autolaunch.as_ref().unwrap().enable();
+                    }
+                    false => {
+                        let _ = autolaunch.as_ref().unwrap().disable();
+                    }
+                }
+
+                autolaunch_switch_item.set_checked(
+                    autolaunch.as_ref().unwrap().is_enabled().unwrap()
+                );
+
                 check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
                     connected_icon.clone(), 
@@ -152,6 +185,24 @@ fn main() {
                     notifications_switch_item.set_checked(
                         preferences.as_ref().unwrap().load_preference("notifications")
                     );
+                }
+
+                if event.id == autolaunch_switch_item.id() {
+                    let preferences = preferences.as_ref().unwrap();
+                    let autolaunch = autolaunch.as_ref().unwrap();
+
+                    preferences.toggle_preference("autolaunch");
+
+                    match preferences.load_preference("autolaunch") {
+                        true => {
+                            let _ = autolaunch.enable();
+                        }
+                        false => {
+                            let _ = autolaunch.disable();
+                        }
+                    }
+
+                    autolaunch_switch_item.set_checked(autolaunch.is_enabled().unwrap());
                 }
 
                 if event.id == exit_item.id() {

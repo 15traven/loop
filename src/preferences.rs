@@ -28,6 +28,10 @@ impl Preferences {
         if !self.exists("notifications") {
             self.save_preference("notifications", true);
         }
+
+        if !self.exists("autolaunch") {
+            self.save_preference("autolaunch", true);
+        }
     }
 
     pub fn save_preference(&self, key: &str, value: bool) {
