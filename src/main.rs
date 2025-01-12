@@ -15,6 +15,9 @@ use tray_icon::{
 };
 use notify_rust::Notification;
 
+mod preferences;
+use preferences::Preferences;
+
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
 }
@@ -108,6 +111,7 @@ fn main() {
     ]);
 
     let mut tray_icon: Option<TrayIcon> = None;
+    let mut preferences: Option<Preferences> = None;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -121,6 +125,9 @@ fn main() {
                         .build()
                         .unwrap()
                 );
+
+                preferences = Some(Preferences::new());
+                preferences.as_ref().unwrap().set_intial_values();
 
                 check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
