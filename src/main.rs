@@ -117,7 +117,8 @@ fn main() {
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
-                name: Some("Mercury".to_string()),
+                name: Some("Loop".to_string()),
+                version: Some("0.1.0".to_string()),
                 ..Default::default()
             })
         ),
