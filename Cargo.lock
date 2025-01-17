@@ -1878,6 +1878,7 @@ dependencies = [
  "reqwest",
  "tao",
  "tray-icon",
+ "winapi",
  "winres",
 ]
 

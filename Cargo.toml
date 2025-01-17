@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 build = "build.rs"
 
+[package.metadata.winres]
+OriginalFilename = "loop.exe"
+FileDescription = "Online status in your menu bar"
+
 [dependencies]
 auto-launch = "0.5.0"
 image = "0.25.5"
@@ -15,3 +19,4 @@ tray-icon = { path="crates/tray-icon" }
 
 [build-dependencies]
 winres = "0.1.12"
+winapi = { version = "0.3.9", features = ["winnt"] }
