@@ -1,22 +1,17 @@
 #![windows_subsystem = "windows"]
 
-use std::{
-    thread::{self, sleep}, time::Duration
-};
-use auto_launch::{AutoLaunch, AutoLaunchBuilder};
+use std::{thread::{self, sleep}, time::Duration};
 use tao::{
     event::Event,
     event_loop::{ControlFlow, EventLoopBuilder},
 };
 use tray_icon::{
     menu::{
-        AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem
-    }, Icon, TrayIcon, TrayIconBuilder
+        AboutMetadata, Menu, MenuEvent, 
+        MenuItem, PredefinedMenuItem
+    }, 
+    TrayIcon, TrayIconBuilder, Icon
 };
-use notify_rust::Notification;
-
-mod preferences;
-use preferences::Preferences;
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
@@ -25,47 +20,19 @@ enum UserEvent {
 fn check_connection(
     mut tray_icon: TrayIcon,
     connected_icon: Icon,
-    disconnected_icon: Icon,
-    preferences: Preferences
+    disconnected_icon: Icon
 ) {    
     thread::spawn(move || {
-        let mut previous_status = true;
-        let mut current_status = true;
-
         loop {
             let res = reqwest::blocking::get("https://google.com");
             match res {
                 Ok(_)=> {
                     tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
-                    current_status = true;
                 }
                 Err(_err) => {
                     tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
-                    current_status = false;
                 }
             }
-
-            if preferences.load_preference("notifications") {
-                if current_status != previous_status {
-                    match current_status {
-                        true => {
-                            let _ = Notification::new()
-                            .appname("Mercury")
-                            .body("Online")
-                            .show();
-                        }
-                        false => {
-                            let _ = Notification::new()
-                            .appname("Mercury")
-                            .body("Offline")
-                            .show();
-                        }
-                    }
-                }
-            }
-
-            previous_status = current_status;
-
             sleep(Duration::from_secs(20));
         }
     });
@@ -99,26 +66,11 @@ fn main() {
 
     let tray_menu = Menu::new();
     let exit_item = MenuItem::new("Exit", true, None);
-    let notifications_switch_item = CheckMenuItem::new(
-        "Notification", 
-        true, 
-        true, 
-        None
-    );
-    let autolaunch_switch_item = CheckMenuItem::new(
-        "Autolaunch", 
-        true, 
-        true, 
-        None
-    );
     let _ = tray_menu.append_items(&[
-        &notifications_switch_item,
-        &autolaunch_switch_item,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
                 name: Some("Loop".to_string()),
-                version: Some("0.1.0".to_string()),
                 ..Default::default()
             })
         ),
@@ -127,8 +79,6 @@ fn main() {
     ]);
 
     let mut tray_icon: Option<TrayIcon> = None;
-    let mut preferences: Option<Preferences> = None;
-    let mut autolaunch: Option<AutoLaunch> = None;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -143,71 +93,13 @@ fn main() {
                         .unwrap()
                 );
 
-                preferences = Some(Preferences::new());
-                preferences.as_ref().unwrap().set_intial_values();
-
-                notifications_switch_item.set_checked(
-                    preferences.as_ref().unwrap().load_preference("notifications")
-                );
-
-                let exe_path = std::env::current_exe()
-                    .unwrap()
-                    .display()
-                    .to_string();
-
-                autolaunch = Some(
-                    AutoLaunchBuilder::new()
-                        .set_app_name("loop")
-                        .set_app_path(&exe_path)
-                        .build()
-                        .unwrap()
-                );
-                match preferences.as_ref().unwrap().load_preference("autolaunch") {
-                    true => {
-                        let _ = autolaunch.as_ref().unwrap().enable();
-                    }
-                    false => {
-                        let _ = autolaunch.as_ref().unwrap().disable();
-                    }
-                }
-
-                autolaunch_switch_item.set_checked(
-                    autolaunch.as_ref().unwrap().is_enabled().unwrap()
-                );
-
                 check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
                     connected_icon.clone(), 
-                    disconnected_icon.clone(),
-                    preferences.clone().unwrap()
+                    disconnected_icon.clone()
                 );
             }
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
-                if event.id == notifications_switch_item.id() {
-                    preferences.as_ref().unwrap().toggle_preference("notifications");
-                    notifications_switch_item.set_checked(
-                        preferences.as_ref().unwrap().load_preference("notifications")
-                    );
-                }
-
-                if event.id == autolaunch_switch_item.id() {
-                    let preferences = preferences.as_ref().unwrap();
-                    let autolaunch = autolaunch.as_ref().unwrap();
-
-                    preferences.toggle_preference("autolaunch");
-
-                    match preferences.load_preference("autolaunch") {
-                        true => {
-                            let _ = autolaunch.enable();
-                        }
-                        false => {
-                            let _ = autolaunch.disable();
-                        }
-                    }
-
-                    autolaunch_switch_item.set_checked(autolaunch.is_enabled().unwrap());
-                }
-
                 if event.id == exit_item.id() {
                     tray_icon.take();
                     *control_flow = ControlFlow::Exit;
