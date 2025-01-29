@@ -13,6 +13,9 @@ use tray_icon::{
     TrayIcon, TrayIconBuilder, Icon
 };
 
+mod helpers;
+use helpers::{load_icon, autorun};
+
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
 }
@@ -36,18 +39,6 @@ fn check_connection(
             sleep(Duration::from_secs(20));
         }
     });
-}
-
-fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
-    let (icon_rgba, icon_width, icon_height) = {
-        let image = image::open(path)
-            .expect("Failed to open icon path")
-            .into_rgba8();
-        let (width, height) = image.dimensions();
-        let rgba = image.into_raw();
-        (rgba, width, height)
-    };
-    tray_icon::Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
 }
 
 fn main() {
@@ -92,6 +83,8 @@ fn main() {
                         .build()
                         .unwrap()
                 );
+
+                autorun();
 
                 check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
