@@ -56,8 +56,10 @@ fn main() {
     }));
 
     let tray_menu = Menu::new();
+    let history_item = MenuItem::new("History", true, None);
     let exit_item = MenuItem::new("Exit", true, None);
     let _ = tray_menu.append_items(&[
+        &history_item,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
@@ -93,6 +95,10 @@ fn main() {
                 );
             }
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
+                if event.id == history_item.id() {
+                    let _ = gui::run();
+                }
+
                 if event.id == exit_item.id() {
                     tray_icon.take();
                     *control_flow = ControlFlow::Exit;
