@@ -96,7 +96,7 @@ fn main() {
             }
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
                 if event.id == history_item.id() {
-                    let _ = gui::run();
+                    let _ = history::window::show();
                 }
 
                 if event.id == exit_item.id() {

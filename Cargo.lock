@@ -1925,13 +1925,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gui"
-version = "0.1.0"
-dependencies = [
- "eframe",
-]
-
-[[package]]
 name = "h2"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1998,6 +1991,13 @@ name = "hexf-parse"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
+
+[[package]]
+name = "history"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+]
 
 [[package]]
 name = "home"
@@ -2564,7 +2564,7 @@ checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 name = "loop"
 version = "0.1.0"
 dependencies = [
- "gui",
+ "history",
  "image",
  "reqwest",
  "tao",
