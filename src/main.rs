@@ -15,6 +15,7 @@ use tray_icon::{
 
 mod helpers;
 use helpers::{load_icon, autorun};
+use history::types::HistoryRecord;
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
@@ -31,9 +32,11 @@ fn check_connection(
             match res {
                 Ok(_)=> {
                     tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
+                    let _ = history::save(HistoryRecord::online());
                 }
                 Err(_err) => {
                     tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
+                    let _ = history::save(HistoryRecord::offline());
                 }
             }
             sleep(Duration::from_secs(20));

@@ -93,7 +93,7 @@ dependencies = [
  "paste",
  "static_assertions",
  "windows",
- "windows-core",
+ "windows-core 0.58.0",
 ]
 
 [[package]]
@@ -170,6 +170,12 @@ name = "android-properties"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc7eb209b1518d6bb87b283c20095f5228ecda460da70b44f0802523dea6da04"
+
+[[package]]
+name = "android-tzdata"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e999941b234f3131b00bc13c22d06e8c5ff726d1b6318ac7eb276997bbb4fef0"
 
 [[package]]
 name = "android_system_properties"
@@ -753,6 +759,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "chrono"
+version = "0.4.39"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e36cc9d416881d2e24f9a963be5fb1cd90966419ac844274161d10488b3e825"
+dependencies = [
+ "android-tzdata",
+ "iana-time-zone",
+ "js-sys",
+ "num-traits",
+ "serde",
+ "wasm-bindgen",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
 name = "clipboard-win"
 version = "5.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1028,7 +1049,7 @@ version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330c60081dcc4c72131f8eb70510f1ac07223e5d4163db481a04a0befcffa412"
 dependencies = [
- "libloading 0.7.4",
+ "libloading 0.8.6",
 ]
 
 [[package]]
@@ -1996,7 +2017,10 @@ checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
 name = "history"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "eframe",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2118,6 +2142,29 @@ dependencies = [
  "tokio",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "iana-time-zone"
+version = "0.1.61"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "235e081f3925a06703c2d0117ea8b91f042756fd6e7a6e5d901e8ca1a996b220"
+dependencies = [
+ "android_system_properties",
+ "core-foundation-sys",
+ "iana-time-zone-haiku",
+ "js-sys",
+ "wasm-bindgen",
+ "windows-core 0.52.0",
+]
+
+[[package]]
+name = "iana-time-zone-haiku"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f31827a206f56af32e590ba56d5d2d085f558508192593743f16b2306495269f"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -2877,7 +2924,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
 dependencies = [
- "proc-macro-crate 2.0.0",
+ "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
  "syn 2.0.95",
@@ -3843,9 +3890,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.135"
+version = "1.0.138"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b0d7ba2887406110130a978386c4e1befb98c674b4fba677954e4db976630d9"
+checksum = "d434192e7da787e94a6ea7e9670b26a036d0ca41e0b7efb2676dd32bae872949"
 dependencies = [
  "itoa",
  "memchr",
@@ -4152,7 +4199,7 @@ dependencies = [
  "unicode-segmentation",
  "url",
  "windows",
- "windows-core",
+ "windows-core 0.58.0",
  "windows-version",
  "x11-dl",
 ]
@@ -4954,7 +5001,16 @@ version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd04d41d93c4992d421894c18c8b43496aa748dd4c081bac0dc93eb0489272b6"
 dependencies = [
- "windows-core",
+ "windows-core 0.58.0",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-core"
+version = "0.52.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33ab640c8d7e35bf8ba19b884ba838ceb4fba93a4e8c65a9059d08afcfc683d9"
+dependencies = [
  "windows-targets 0.52.6",
 ]
 
