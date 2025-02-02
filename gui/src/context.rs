@@ -1,18 +1,18 @@
-use iced::{
-    widget::text,
-    Element
+use eframe::{
+    Frame,
+    egui::{
+        Context,
+        CentralPanel
+    }
 };
 
 #[derive(Default)]
-pub struct Context {}
+pub struct HistoryContext {}
 
-#[derive(Debug)]
-pub enum Message {}
-
-impl Context {
-    pub fn view(&self) -> Element<Message> {
-        text("History").into()
+impl eframe::App for HistoryContext {
+    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+        CentralPanel::default().show(ctx, |ui| {
+            ui.heading("History");
+        });
     }
-
-    pub fn update(&mut self, _message: Message) {}
 }
