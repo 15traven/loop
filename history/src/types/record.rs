@@ -1,8 +1,8 @@
-use serde::{Serialize, Desrialize};
+use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
 use super::ConnectionStatus;
 
-#[derive(Serialize, Desrialize)]
+#[derive(Serialize, Deserialize)]
 pub struct HistoryRecord {
     timestamp: DateTime<Utc>,
     status: ConnectionStatus
