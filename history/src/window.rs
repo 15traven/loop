@@ -7,14 +7,27 @@ use eframe::{
         ViewportBuilder
     }
 };
+use crate::{load, types::HistoryRecord};
 
-#[derive(Default)]
-struct HistoryWindow {}
+use super::table::HistoryTable;
+
+struct HistoryWindow {
+    data: Vec<HistoryRecord>
+}
+
+impl Default for HistoryWindow {
+    fn default() -> Self {
+        let data: Vec<HistoryRecord> = load().unwrap_or_else(|_| Vec::new());
+
+        HistoryWindow { data }
+    }
+}
 
 impl eframe::App for HistoryWindow {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         CentralPanel::default().show(ctx, |ui| {
-            ui.heading("History");
+            let mut table = HistoryTable::default();
+            table.render(ui, self.data.clone());
         });
     }
 }

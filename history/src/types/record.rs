@@ -2,10 +2,10 @@ use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
 use super::ConnectionStatus;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct HistoryRecord {
-    timestamp: DateTime<Utc>,
-    status: ConnectionStatus
+    pub timestamp: DateTime<Utc>,
+    pub status: ConnectionStatus
 }
 
 impl HistoryRecord {

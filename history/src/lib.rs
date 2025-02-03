@@ -1,6 +1,7 @@
 use std::fs;
 
 pub mod window;
+pub mod table;
 pub mod types;
 
 use types::HistoryRecord;
