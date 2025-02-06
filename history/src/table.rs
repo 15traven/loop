@@ -28,9 +28,11 @@ impl HistoryTable {
                 for record in data {
                     body.row(30.0, |mut row| {
                         row.col(|ui| {
-                            ui.label(RichText::new(record.timestamp.to_string())
-                                .size(15.0)
-                            );
+                            ui.label(RichText::new(format!(
+                                "{}   {}", 
+                                record.timestamp.date_naive().to_string(),
+                                record.timestamp.time().format("%H:%M")
+                            )).size(15.0));
                         });
                         row.col(|ui| {
                             ui.add_space(20.0);
