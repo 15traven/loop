@@ -1,13 +1,9 @@
 use eframe::{
-    Frame, 
-    NativeOptions,
     egui::{
-        Context,
-        CentralPanel,
-        ViewportBuilder
-    }
+        self, Button, CentralPanel, Color32, Context, Margin, RichText, Stroke, TopBottomPanel, ViewportBuilder
+    }, Frame, NativeOptions
 };
-use crate::{load, types::HistoryRecord};
+use crate::{load, clear, types::HistoryRecord};
 
 use super::table::HistoryTable;
 
@@ -27,8 +23,35 @@ impl eframe::App for HistoryWindow {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         CentralPanel::default().show(ctx, |ui| {
             let mut table = HistoryTable::default();
-            table.render(ui, self.data.clone());
+
+            ui.vertical(|ui| {
+                ui.set_height(ui.available_height() - 36.0);
+
+                table.render(ui, self.data.clone());
+            });
         });
+
+        TopBottomPanel::bottom("bottom_panel")
+            .frame(egui::containers::Frame::none()
+                .inner_margin(Margin::symmetric(4.0, 6.0))
+            )
+            .min_height(40.0)
+            .show(ctx, |ui| {
+                if ui.add_sized(
+                    [342.0, 32.0],
+                    Button::new(
+                        RichText::new("Clear history")
+                            .color(Color32::RED)
+                            .heading()
+                            .size(14.0)
+                        )
+                        .fill(Color32::TRANSPARENT)
+                        .stroke(Stroke::default())
+                ).clicked() {
+                    let _ = clear();
+                    self.data = load().unwrap_or_else(|_| Vec::new());
+                }
+            });
     }
 }
 

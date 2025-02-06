@@ -22,3 +22,9 @@ pub fn save(record: HistoryRecord) -> std::io::Result<()> {
 
     Ok(())
 }
+
+pub fn clear() -> std::io::Result<()> {
+    fs::write("history.json", "")?;
+
+    Ok(())
+}
