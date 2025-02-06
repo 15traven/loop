@@ -34,9 +34,7 @@ impl HistoryTable {
                         });
                         row.col(|ui| {
                             ui.add_space(20.0);
-                            ui.label(RichText::new(record.status.to_string())
-                                .size(15.0)
-                            );
+                            record.status.as_icon(ui);
                         });
                     });
                 }
