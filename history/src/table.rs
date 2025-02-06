@@ -26,15 +26,15 @@ impl HistoryTable {
             .column(Column::auto().resizable(false))
             .body(|mut body| {
                 for record in data {
-                    let rect = body.row(30.0, |mut row| {
+                    body.row(30.0, |mut row| {
                         row.col(|ui| {
-                            ui.label(RichText::new("timestamp")
+                            ui.label(RichText::new(record.timestamp.to_string())
                                 .size(15.0)
                             );
                         });
                         row.col(|ui| {
                             ui.add_space(20.0);
-                            ui.label(RichText::new("status")
+                            ui.label(RichText::new(record.status.to_string())
                                 .size(15.0)
                             );
                         });
