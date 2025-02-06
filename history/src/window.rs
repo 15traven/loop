@@ -41,7 +41,6 @@ impl eframe::App for HistoryWindow {
                     [342.0, 32.0],
                     Button::new(
                         RichText::new("Clear history")
-                            .color(Color32::RED)
                             .heading()
                             .size(14.0)
                         )

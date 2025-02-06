@@ -4,6 +4,10 @@ pub mod window;
 pub mod table;
 pub mod types;
 
+use native_dialog::{
+    MessageDialog, 
+    MessageType
+};
 use types::HistoryRecord;
 
 pub fn load() -> std::io::Result<Vec<HistoryRecord>> {
@@ -24,7 +28,15 @@ pub fn save(record: HistoryRecord) -> std::io::Result<()> {
 }
 
 pub fn clear() -> std::io::Result<()> {
-    fs::write("history.json", "")?;
+    let confirm = MessageDialog::new()
+        .set_type(MessageType::Warning)
+        .set_text("Do you want to clear history?")
+        .show_confirm()
+        .unwrap();
+
+    if confirm {
+        fs::write("history.json", "")?;
+    }
 
     Ok(())
 }
