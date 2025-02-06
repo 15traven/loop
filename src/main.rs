@@ -15,7 +15,7 @@ use tray_icon::{
 
 mod helpers;
 use helpers::{load_icon, autorun};
-use history::types::HistoryRecord;
+use history::types::{HistoryRecord, ConnectionStatus};
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
@@ -27,16 +27,28 @@ fn check_connection(
     disconnected_icon: Icon
 ) {    
     thread::spawn(move || {
+        let mut prev_status: ConnectionStatus = ConnectionStatus::Neutral;
+
         loop {
             let res = reqwest::blocking::get("https://google.com");
             match res {
                 Ok(_)=> {
                     tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
-                    let _ = history::save(HistoryRecord::online());
+
+                    if prev_status != ConnectionStatus::Online {
+                        let _ = history::save(HistoryRecord::online());
+                    }
+
+                    prev_status = ConnectionStatus::Online;
                 }
                 Err(_err) => {
                     tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
-                    let _ = history::save(HistoryRecord::offline());
+
+                    if prev_status != ConnectionStatus::Offline {
+                        let _ = history::save(HistoryRecord::offline());
+                    }
+
+                    prev_status = ConnectionStatus::Offline;
                 }
             }
             sleep(Duration::from_secs(20));

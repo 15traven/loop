@@ -1,8 +1,9 @@
 use eframe::egui::{self, Image, Vec2};
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub enum ConnectionStatus {
+    Neutral,
     Online,
     Offline
 }
@@ -20,6 +21,7 @@ impl ConnectionStatus {
             egui::include_image!(r"..\..\..\assets\disconnected_icon.png"
                 )).fit_to_exact_size(Vec2::new(18.0, 18.0)));
             },
+            _ => {}
         }
     }
 }
