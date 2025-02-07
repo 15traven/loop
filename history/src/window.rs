@@ -1,12 +1,18 @@
 use eframe::{
     egui::{
-        self, Button, CentralPanel, Color32, Context, Margin, RichText, Stroke, TopBottomPanel, ViewportBuilder
+        self, Button, CentralPanel, 
+        Color32, Context, Margin, 
+        RichText, Stroke, TopBottomPanel, 
+        ViewportBuilder
     }, Frame, NativeOptions
 };
+use native_dialog::{
+    MessageDialog, 
+    MessageType
+};
+
 use crate::{load, clear, types::HistoryRecord};
-
 use super::table::HistoryTable;
-
 struct HistoryWindow {
     data: Vec<HistoryRecord>
 }
@@ -24,11 +30,17 @@ impl eframe::App for HistoryWindow {
         CentralPanel::default().show(ctx, |ui| {
             let mut table = HistoryTable::default();
 
-            ui.vertical(|ui| {
-                ui.set_height(ui.available_height() - 36.0);
+            if self.data.is_empty() {
+                ui.centered_and_justified(|ui| {
+                    ui.label("No history found");
+                });
+            } else {
+                ui.vertical(|ui| {
+                    ui.set_height(ui.available_height() - 36.0);
 
-                table.render(ui, self.data.clone());
-            });
+                    table.render(ui, self.data.clone());
+                });
+            }
         });
 
         TopBottomPanel::bottom("bottom_panel")
@@ -47,8 +59,18 @@ impl eframe::App for HistoryWindow {
                         .fill(Color32::TRANSPARENT)
                         .stroke(Stroke::default())
                 ).clicked() {
-                    let _ = clear();
-                    self.data = load().unwrap_or_else(|_| Vec::new());
+                    if !self.data.is_empty() {
+                        let confirm = MessageDialog::new()
+                            .set_type(MessageType::Warning)
+                            .set_text("Do you want to clear history?")
+                            .show_confirm()
+                            .unwrap();
+                        
+                        if confirm {
+                            let _ = clear();
+                            self.data = load().unwrap_or_else(|_| Vec::new());
+                        }
+                    }
                 }
             });
     }
