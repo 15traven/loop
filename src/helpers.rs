@@ -1,27 +1,19 @@
-use std::path::Path;
-use winreg::{
-    enums::{
-        HKEY_CURRENT_USER, 
-        KEY_WRITE
-    }, RegKey
-};
+use mslnk::ShellLink;
 
 pub fn autorun() {
     let exe_path = std::env::current_exe()
-    .unwrap()
-    .into_os_string()
-    .into_string()
-    .unwrap();
+        .unwrap()
+        .into_os_string()
+        .into_string()
+        .unwrap();
 
-    let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-    let path = Path::new("Software")
-        .join("Microsoft")
-        .join("Windows")
-        .join("CurrentVersion")
-        .join("Run");
-
-    let key = hkcu.open_subkey_with_flags(path, KEY_WRITE).unwrap();
-    let _ = key.set_value("tpass", &exe_path);
+    let username = whoami::username();
+    let lnk = format!(
+        r"C:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\loop.lnk",
+        username
+    );
+    let sl = ShellLink::new(exe_path).unwrap();
+    sl.create_lnk(lnk).unwrap()
 }
 
 pub fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
