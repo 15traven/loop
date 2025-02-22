@@ -1,4 +1,7 @@
+use std::{thread::{self, sleep}, time::Duration};
 use mslnk::ShellLink;
+use tray_icon::{TrayIcon, Icon};
+use history::types::{HistoryRecord, ConnectionStatus};
 
 pub fn autorun() {
     let exe_path = std::env::current_exe()
@@ -31,4 +34,48 @@ pub fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
         icon_width, 
         icon_height
     ).expect("Failed to open icon")
+}
+
+pub fn check_connection(
+    mut tray_icon: TrayIcon,
+    connected_icon: Icon,
+    disconnected_icon: Icon
+) {    
+    thread::spawn(move || {
+        let mut prev_status: ConnectionStatus = ConnectionStatus::Neutral;
+
+        loop {
+            let status: bool = match reqwest::blocking::get("https://google.com") {
+                Ok(_) => true,
+                Err(_err) => {
+                    match reqwest::blocking::get("https://github.com") {
+                        Ok(_) => true,
+                        Err(_err) => false
+                    }
+                }
+            };
+
+            match status {
+                true => {
+                    tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
+
+                    if prev_status != ConnectionStatus::Online {
+                        let _ = history::save(HistoryRecord::online());
+                    }
+
+                    prev_status = ConnectionStatus::Online;
+                }
+                false => {
+                    tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
+
+                    if prev_status != ConnectionStatus::Offline {
+                        let _ = history::save(HistoryRecord::offline());
+                    }
+
+                    prev_status = ConnectionStatus::Offline;
+                }
+            }
+            sleep(Duration::from_secs(20));
+        }
+    });
 }

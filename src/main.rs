@@ -1,6 +1,5 @@
 #![windows_subsystem = "windows"]
 
-use std::{thread::{self, sleep}, time::Duration};
 use tao::{
     event::Event,
     event_loop::{ControlFlow, EventLoopBuilder},
@@ -10,50 +9,14 @@ use tray_icon::{
         AboutMetadata, Menu, MenuEvent, 
         MenuItem, PredefinedMenuItem
     }, 
-    TrayIcon, TrayIconBuilder, Icon
+    TrayIcon, TrayIconBuilder
 };
 
 mod helpers;
 use helpers::{load_icon, autorun};
-use history::types::{HistoryRecord, ConnectionStatus};
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
-}
-
-fn check_connection(
-    mut tray_icon: TrayIcon,
-    connected_icon: Icon,
-    disconnected_icon: Icon
-) {    
-    thread::spawn(move || {
-        let mut prev_status: ConnectionStatus = ConnectionStatus::Neutral;
-
-        loop {
-            let res = reqwest::blocking::get("https://google.com");
-            match res {
-                Ok(_)=> {
-                    tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
-
-                    if prev_status != ConnectionStatus::Online {
-                        let _ = history::save(HistoryRecord::online());
-                    }
-
-                    prev_status = ConnectionStatus::Online;
-                }
-                Err(_err) => {
-                    tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
-
-                    if prev_status != ConnectionStatus::Offline {
-                        let _ = history::save(HistoryRecord::offline());
-                    }
-
-                    prev_status = ConnectionStatus::Offline;
-                }
-            }
-            sleep(Duration::from_secs(20));
-        }
-    });
 }
 
 fn main() {
@@ -103,7 +66,7 @@ fn main() {
 
                 autorun();
 
-                check_connection(
+                helpers::check_connection(
                     tray_icon.as_ref().unwrap().clone(), 
                     connected_icon.clone(), 
                     disconnected_icon.clone()
