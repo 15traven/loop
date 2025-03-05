@@ -1,8 +1,7 @@
 use eframe::{
     egui::{
-        self, Button, CentralPanel, 
-        Color32, Context, Margin, 
-        RichText, Stroke, TopBottomPanel, 
+        self, CentralPanel, Context, 
+        Margin, TopBottomPanel, Vec2, 
         ViewportBuilder
     }, Frame, NativeOptions
 };
@@ -14,7 +13,9 @@ use native_dialog::{
 use crate::{load, clear, types::HistoryRecord};
 use super::table::HistoryTable;
 struct HistoryWindow {
-    data: Vec<HistoryRecord>
+    data: Vec<HistoryRecord>,
+    is_sorted: bool,
+    sort_button_text: String
 }
 
 impl Default for HistoryWindow {
@@ -22,7 +23,11 @@ impl Default for HistoryWindow {
         let mut data: Vec<HistoryRecord> = load().unwrap_or_else(|_| Vec::new());
         data.sort_by_cached_key(|x| std::cmp::Reverse(x.timestamp));
 
-        HistoryWindow { data }
+        HistoryWindow { 
+            data,
+            is_sorted: true,
+            sort_button_text: "⬆".to_string()
+        }
     }
 }
 
@@ -50,29 +55,39 @@ impl eframe::App for HistoryWindow {
             )
             .min_height(40.0)
             .show(ctx, |ui| {
-                if ui.add_sized(
-                    [342.0, 32.0],
-                    Button::new(
-                        RichText::new("Clear history")
-                            .heading()
-                            .size(14.0)
-                        )
-                        .fill(Color32::TRANSPARENT)
-                        .stroke(Stroke::default())
-                ).clicked() {
-                    if !self.data.is_empty() {
-                        let confirm = MessageDialog::new()
-                            .set_type(MessageType::Warning)
-                            .set_text("Do you want to clear history?")
-                            .show_confirm()
-                            .unwrap();
-                        
-                        if confirm {
-                            let _ = clear();
-                            self.data = load().unwrap_or_else(|_| Vec::new());
+                ui.horizontal_top(|ui| {
+                    ui.allocate_ui(
+                        Vec2::new(ui.style().spacing.item_spacing.x, 0.0), 
+                        |ui| {
+                            if ui.button(&self.sort_button_text).clicked() {
+                                if self.is_sorted {
+                                    self.data.sort_by_cached_key(|x| x.timestamp);
+                                    self.sort_button_text = "⬇".to_string();
+                                } else {
+                                    self.data.sort_by_cached_key(|x| std::cmp::Reverse(x.timestamp));
+                                    self.sort_button_text = "⬆".to_string();
+                                }
+
+                                self.is_sorted = !self.is_sorted;
+                            }
+                        });
+                    ui.vertical_centered_justified(|ui| {
+                        if ui.button("Clear history").clicked() {
+                            if !self.data.is_empty() {
+                                let confirm = MessageDialog::new()
+                                    .set_type(MessageType::Warning)
+                                    .set_text("Do you want to clear history?")
+                                    .show_confirm()
+                                    .unwrap();
+                                
+                                if confirm {
+                                    let _ = clear();
+                                    self.data = load().unwrap_or_else(|_| Vec::new());
+                                }
+                            }
                         }
-                    }
-                }
+                    });
+                });
             });
     }
 }
