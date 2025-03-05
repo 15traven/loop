@@ -1,4 +1,7 @@
-use std::{thread::{self, sleep}, time::Duration};
+use std::{
+    thread::{self, sleep}, 
+    time::Duration
+};
 use mslnk::ShellLink;
 use tray_icon::{TrayIcon, Icon};
 use history::types::{HistoryRecord, ConnectionStatus};

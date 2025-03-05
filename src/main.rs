@@ -29,13 +29,13 @@ fn main() {
     let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
 
     let proxy = event_loop.create_proxy();
-    MenuEvent::set_event_handler(Some(move |evnet| {
-        let _ = proxy.send_event(UserEvent::MenuEvent(evnet));
+    MenuEvent::set_event_handler(Some(move |event| {
+        let _ = proxy.send_event(UserEvent::MenuEvent(event));
     }));
 
     let tray_menu = Menu::new();
     let history_item = MenuItem::new("History", true, None);
-    let exit_item = MenuItem::new("Exit", true, None);
+    let quit_item = MenuItem::new("Quit", true, None);
     let _ = tray_menu.append_items(&[
         &history_item,
         &PredefinedMenuItem::about(
@@ -46,7 +46,7 @@ fn main() {
             })
         ),
         &PredefinedMenuItem::separator(),
-        &exit_item
+        &quit_item
     ]);
 
     let mut tray_icon: Option<TrayIcon> = None;
@@ -77,7 +77,7 @@ fn main() {
                     let _ = history::window::show();
                 }
 
-                if event.id == exit_item.id() {
+                if event.id == quit_item.id() {
                     tray_icon.take();
                     *control_flow = ControlFlow::Exit;
                 }

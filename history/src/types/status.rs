@@ -13,12 +13,12 @@ impl ConnectionStatus {
         match self {
             ConnectionStatus::Online => {
                 ui.add(Image::new(
-            egui::include_image!(r"..\..\..\assets\connected_icon.png"
+                    egui::include_image!(r"..\..\..\assets\connected_icon.png"
                 )).fit_to_exact_size(Vec2::new(18.0, 18.0)));
             },
             ConnectionStatus::Offline => {
                 ui.add(Image::new(
-            egui::include_image!(r"..\..\..\assets\disconnected_icon.png"
+                    egui::include_image!(r"..\..\..\assets\disconnected_icon.png"
                 )).fit_to_exact_size(Vec2::new(18.0, 18.0)));
             },
             _ => {}
