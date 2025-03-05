@@ -19,7 +19,8 @@ struct HistoryWindow {
 
 impl Default for HistoryWindow {
     fn default() -> Self {
-        let data: Vec<HistoryRecord> = load().unwrap_or_else(|_| Vec::new());
+        let mut data: Vec<HistoryRecord> = load().unwrap_or_else(|_| Vec::new());
+        data.sort_by_cached_key(|x| std::cmp::Reverse(x.timestamp));
 
         HistoryWindow { data }
     }
