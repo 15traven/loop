@@ -13,6 +13,10 @@ use tray_icon::{
 };
 
 mod helpers;
+mod types;
+mod history;
+mod gui;
+
 use helpers::{load_icon, autorun};
 
 enum UserEvent {
@@ -74,7 +78,7 @@ fn main() {
             }
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
                 if event.id == history_item.id() {
-                    let _ = history::window::show();
+                    let _ = gui::history_window::show();
                 }
 
                 if event.id == quit_item.id() {

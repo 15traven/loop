@@ -1,10 +1,6 @@
 use std::fs;
 
-pub mod window;
-pub mod table;
-pub mod types;
-
-use types::HistoryRecord;
+use crate::types::HistoryRecord;
 
 pub fn load() -> std::io::Result<Vec<HistoryRecord>> {
     let json = fs::read_to_string("history.json")?;

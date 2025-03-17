@@ -7,7 +7,7 @@ use eframe::egui::{
 };
 use egui_extras::{TableBuilder, Column};
 
-use super::types::HistoryRecord;
+use crate::types::HistoryRecord;
 
 #[derive(Default)]
 pub struct HistoryTable {}

@@ -4,7 +4,7 @@ use std::{
 };
 use mslnk::ShellLink;
 use tray_icon::{TrayIcon, Icon};
-use history::types::{HistoryRecord, ConnectionStatus};
+use crate::types::{HistoryRecord, ConnectionStatus};
 
 pub fn autorun() {
     let exe_path = std::env::current_exe()
@@ -63,7 +63,7 @@ pub fn check_connection(
                     tray_icon.set_icon(Some(connected_icon.clone())).unwrap();
 
                     if prev_status != ConnectionStatus::Online {
-                        let _ = history::save(HistoryRecord::online());
+                        let _ = crate::history::save(HistoryRecord::online());
                     }
 
                     prev_status = ConnectionStatus::Online;
@@ -72,7 +72,7 @@ pub fn check_connection(
                     tray_icon.set_icon(Some(disconnected_icon.clone())).unwrap();
 
                     if prev_status != ConnectionStatus::Offline {
-                        let _ = history::save(HistoryRecord::offline());
+                        let _ = crate::history::save(HistoryRecord::offline());
                     }
 
                     prev_status = ConnectionStatus::Offline;

@@ -10,8 +10,8 @@ use native_dialog::{
     MessageType
 };
 
-use crate::{load, clear, types::HistoryRecord};
-use super::table::HistoryTable;
+use crate::{history::{load, clear}, types::HistoryRecord};
+use crate::gui::history_table::HistoryTable;
 struct HistoryWindow {
     data: Vec<HistoryRecord>,
     is_sorted: bool,
@@ -50,8 +50,8 @@ impl eframe::App for HistoryWindow {
         });
 
         TopBottomPanel::bottom("bottom_panel")
-            .frame(egui::containers::Frame::none()
-                .inner_margin(Margin::symmetric(4.0, 6.0))
+            .frame(egui::containers::Frame::new()
+                .inner_margin(Margin::symmetric(4, 6))
             )
             .min_height(40.0)
             .show(ctx, |ui| {
