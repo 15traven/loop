@@ -6,8 +6,7 @@ use tao::{
 };
 use tray_icon::{
     menu::{
-        AboutMetadata, Menu, MenuEvent, 
-        MenuItem, PredefinedMenuItem
+        AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu
     }, 
     TrayIcon, TrayIconBuilder
 };
@@ -38,11 +37,19 @@ fn main() {
         let _ = proxy.send_event(UserEvent::MenuEvent(event));
     }));
 
+    let preferences_submenu = Submenu::new("Preferences", true);
+    let autorun_item = CheckMenuItem::new("Run at startup", true, true, None);
+    let _ = preferences_submenu.append_items(&[
+        &autorun_item
+    ]);
+
     let tray_menu = Menu::new();
     let history_item = MenuItem::new("History", true, None);
     let quit_item = MenuItem::new("Quit", true, None);
     let _ = tray_menu.append_items(&[
         &history_item,
+        &PredefinedMenuItem::separator(),
+        &preferences_submenu,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
@@ -70,8 +77,12 @@ fn main() {
                 );
 
                 if autorun::register().is_ok() {
-                    if autorun::is_enabled().is_err() {
+                    let is_enabled = autorun::is_enabled();
+                    if is_enabled.is_err() {
                         let _ = autorun::enable();
+                        autorun_item.set_checked(true);
+                    } else {
+                        autorun_item.set_checked(is_enabled.unwrap());
                     }
                 }
 
@@ -84,6 +95,13 @@ fn main() {
             Event::UserEvent(UserEvent::MenuEvent(event)) => {
                 if event.id == history_item.id() {
                     let _ = gui::history_window::show();
+                }
+
+                if event.id == autorun_item.id() {
+                    let _ = match autorun::is_enabled().unwrap() {
+                        true => autorun::disable(),
+                        false => autorun::enable()
+                    };
                 }
 
                 if event.id == quit_item.id() {
