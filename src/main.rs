@@ -16,8 +16,9 @@ mod helpers;
 mod types;
 mod history;
 mod gui;
+mod autorun;
 
-use helpers::{load_icon, autorun};
+use helpers::load_icon;
 
 enum UserEvent {
     MenuEvent(tray_icon::menu::MenuEvent),
@@ -68,7 +69,11 @@ fn main() {
                         .unwrap()
                 );
 
-                autorun();
+                if autorun::register().is_ok() {
+                    if autorun::is_enabled().is_err() {
+                        let _ = autorun::enable();
+                    }
+                }
 
                 helpers::check_connection(
                     tray_icon.as_ref().unwrap().clone(), 

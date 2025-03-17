@@ -2,25 +2,8 @@ use std::{
     thread::{self, sleep}, 
     time::Duration
 };
-use mslnk::ShellLink;
 use tray_icon::{TrayIcon, Icon};
 use crate::types::{HistoryRecord, ConnectionStatus};
-
-pub fn autorun() {
-    let exe_path = std::env::current_exe()
-        .unwrap()
-        .into_os_string()
-        .into_string()
-        .unwrap();
-
-    let username = whoami::username();
-    let lnk = format!(
-        r"C:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\loop.lnk",
-        username
-    );
-    let sl = ShellLink::new(exe_path).unwrap();
-    sl.create_lnk(lnk).unwrap()
-}
 
 pub fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
     let (icon_rgba, icon_width, icon_height) = {
