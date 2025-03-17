@@ -16,6 +16,7 @@ mod types;
 mod history;
 mod gui;
 mod autorun;
+mod constants;
 
 use helpers::load_icon;
 
