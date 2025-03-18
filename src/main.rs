@@ -44,20 +44,24 @@ fn main() {
         &autorun_item
     ]);
 
-    let tray_menu = Menu::new();
+    let more_submenu = Submenu::new("More", true);
     let history_item = MenuItem::new("History", true, None);
-    let quit_item = MenuItem::new("Quit", true, None);
-    let _ = tray_menu.append_items(&[
+    let _ = more_submenu.append_items(&[
         &history_item,
-        &PredefinedMenuItem::separator(),
-        &preferences_submenu,
         &PredefinedMenuItem::about(
             None, 
             Some(AboutMetadata {
                 name: Some("Loop".to_string()),
                 ..Default::default()
             })
-        ),
+        )
+    ]);
+
+    let tray_menu = Menu::new();
+    let quit_item = MenuItem::new("Quit", true, None);
+    let _ = tray_menu.append_items(&[
+        &preferences_submenu,
+        &more_submenu,
         &PredefinedMenuItem::separator(),
         &quit_item
     ]);
