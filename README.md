@@ -23,4 +23,4 @@
 > - Windows 11
 <br />
 
-![GitHub last commit](https://img.shields.io/github/last-commit/15traven/TrayPing?logo=github)
+![GitHub last commit](https://img.shields.io/github/last-commit/15traven/loop?logo=github)
