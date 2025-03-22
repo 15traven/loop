@@ -18,5 +18,9 @@
 > ensuring you’re truly online.
 <br />
 
-## Supported platforms
-![Microsoft](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+> [!IMPORTANT]
+> ## Tested on
+> - Windows 11
+<br />
+
+![GitHub last commit](https://img.shields.io/github/last-commit/15traven/TrayPing?logo=github)
