@@ -97,6 +97,7 @@ pub fn show() -> eframe::Result {
         viewport: ViewportBuilder::default()
             .with_inner_size([350.0, 450.0])
             .with_resizable(false)
+            .with_maximize_button(false)
             .with_maximized(false),
         ..Default::default()
     };
